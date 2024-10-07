@@ -1,0 +1,168 @@
+<div class="container">
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <form [formGroup]="travelForm" class="travel-form">
+
+
+        <!-- Customer -->
+        <mat-form-field class="example-full-width">
+          <mat-label>Kunde</mat-label>
+          <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="customer"
+            [matAutocomplete]="customer">
+          <mat-autocomplete autoActiveFirstOption #customer="matAutocomplete">
+            @for (customer of filteredCustomers | async; track customer) {
+            <mat-option [value]="customer.name" (onSelectionChange)="selectedCustomer(customer)">{{customer.name}}</mat-option>
+            }
+          </mat-autocomplete>
+          <button mat-icon-button matSuffix (click)="clear('customer')">
+            <mat-icon matSuffix>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <!-- City -->
+        <mat-form-field class="example-full-width">
+          <mat-label>Ort</mat-label>
+          <input matInput formControlName="city">
+        </mat-form-field>
+
+        <!-- Country -->
+        <mat-form-field class="example-full-width">
+          <mat-label>Land</mat-label>
+          <input type="text" placeholder="Pick one" aria-label="text" matInput formControlName="country"
+          [matAutocomplete]="country">
+        <mat-autocomplete autoActiveFirstOption #country="matAutocomplete">
+          @for (country of filteredCountries | async; track country) {
+          <mat-option [value]="country.name">{{country.name}}</mat-option>
+          }
+        </mat-autocomplete>
+        <button mat-icon-button matSuffix (click)="clear('customer')">
+          <mat-icon matSuffix>close</mat-icon>
+        </button>
+        </mat-form-field>
+
+
+
+        <!-- Start -->
+        <div class="time-group">
+          <!-- Start Date -->
+          <mat-form-field>
+            <mat-label>Start der Reise</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="startDate">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Start Hours -->
+          <mat-form-field class="example-full-width">
+            <mat-label>Uhrzeit</mat-label>
+            <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="startHours"
+              [matAutocomplete]="hourStart">
+            <mat-autocomplete autoActiveFirstOption #hourStart="matAutocomplete">
+              @for (hour of filteredHoursStart | async; track hour) {
+              <mat-option [value]="hour">{{hour}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <!-- Start Minutes -->
+          <mat-form-field class="example-full-width">
+            <mat-label>Minuten</mat-label>
+            <input type="text" placeholder="Pick one2" aria-label="Number" matInput formControlName="startMinutes"
+              [matAutocomplete]="minute">
+            <mat-autocomplete autoActiveFirstOption #minute="matAutocomplete">
+              @for (minute of filteredMinuteStart | async; track minute) {
+              <mat-option [value]="minute">{{minute}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <!-- End -->
+        <div class="time-group">
+          <!-- End Date -->
+          <mat-form-field>
+            <mat-label>Ende der Reise</mat-label>
+            <input matInput [matDatepicker]="endDate" formControlName="endDate">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
+            <mat-datepicker #endDate></mat-datepicker>
+          </mat-form-field>
+
+          <!-- End Hours -->
+          <mat-form-field class="example-full-width">
+            <mat-label>Uhrzeit</mat-label>
+            <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="endHours"
+              [matAutocomplete]="hourEnd">
+            <mat-autocomplete autoActiveFirstOption #hourEnd="matAutocomplete">
+              @for (hour of filteredHoursEnd | async; track hour) {
+              <mat-option [value]="hour">{{hour}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <!-- Start Minutes -->
+          <mat-form-field class="example-full-width">
+            <mat-label>Minuten</mat-label>
+            <input type="text" placeholder="Pick one2" aria-label="Number" matInput formControlName="endMinutes"
+              [matAutocomplete]="minuteEnd">
+            <mat-autocomplete autoActiveFirstOption #minuteEnd="matAutocomplete">
+              @for (minute of filteredMinuteEnd | async; track minute) {
+              <mat-option [value]="minute">{{minute}}</mat-option>
+              }
+            </mat-autocomplete>
+            <button mat-icon-button matSuffix (click)="clear('minuteEnd')">
+              <mat-icon matSuffix>close</mat-icon>
+            </button>
+
+          </mat-form-field>
+        </div>
+
+        <!-- Days -->
+        <div formArrayName="days">
+          @for (item of days.controls; track item; let i = $index) {
+            <div [formGroupName]="i">
+              <mat-form-field class="example-full-width">
+                <mat-label for="type">Position</mat-label>
+                <input matInput id="type" formControlName="position" placeholder="Type" />
+              </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label for="type">Date</mat-label>
+                <input matInput id="type" formControlName="date" placeholder="Type" />
+              </mat-form-field>
+              <mat-checkbox formControlName="breakfast">Frühstück</mat-checkbox>
+              <mat-checkbox formControlName="dinner">Mittag</mat-checkbox>
+              <mat-checkbox formControlName="launch">Launch</mat-checkbox>
+            </div>
+          }
+        </div>
+
+        <!-- Spends -->
+        <button mat-stroked-button (click)="addSpendItem()">Add New Item</button>
+        <div formArrayName="spends">
+          @for (item of spends.controls; track item; let i = $index) {
+            <div [formGroupName]="i">
+              <mat-form-field class="example-full-width">
+                <mat-label for="type">Type:</mat-label>
+                <input matInput id="type" formControlName="type" placeholder="Type" />
+              </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label for="value">Value:</mat-label>
+                <input matInput id="value" formControlName="value" placeholder="Value" />
+              </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label for="date">Date:</mat-label>
+                <input matInput id="date" formControlName="date" type="date" />
+              </mat-form-field>
+              <button mat-stroked-button (click)="removeSpendItem(i)">Remove</button>
+            </div>
+          }
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div>test {{ travelForm.value| json }}</div>
+<div>test {{ customers | json }}</div>
+<div>test {{ selectedCountry | json }}</div>

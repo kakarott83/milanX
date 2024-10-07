@@ -1,0 +1,34 @@
+.spacer {
+    flex: 1 1 auto;
+}
+.mat-drawer-container {
+    height: 100%;
+    background-color: lightgray;
+}
+
+.mat-drawer {
+    width: 200px;
+}
+
+.sidnav-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.sidnav-list-item {
+    text-decoration: none;
+    list-style: none;
+    width: 100%;
+}
+
+.mat-list-drawer {
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-list-menu {
+    display: flex;
+    flex-direction: row;
+    margin-left: 50px;
+}

@@ -1,0 +1,102 @@
+<!--p-menubar [model]="items">
+    <ng-template pTemplate="start">
+            <p-button icon="pi pi-bars" [rounded]="true" [text]="true" severity="secondary"
+                (onClick)="showSidebar=true"></p-button>
+    </ng-template>
+    <ng-template pTemplate="items" let-item let-root="root">
+        <a *ngIf="isAuth" pRipple class="flex align-items-center p-menuitem-link">
+            <span [class]="item.icon"></span>
+            <span class="ml-2">{{ item.label }}</span>
+        </a>
+    </ng-template>
+    <ng-template pTemplate="end">
+        <div class="flex mr-3 w-8rem justify-content-evenly">
+            <p-button *ngIf="isAuth" icon="pi pi-user" [rounded]="true" [text]="true" severity="secondary" />
+            <p-button *ngIf="!isAuth" icon="pi pi-sign-in" [rounded]="true" [text]="true" severity="secondary" routerLink="/login" />
+            <p-button *ngIf="isAuth" icon="pi pi-sign-out" [rounded]="true" [text]="true" severity="secondary" (click)="logOut()" />
+        </div>
+    </ng-template>
+</p-menubar-->
+<!--app-sidenav [sidebarVisible]="showSidebar" [itemsList]="items" (closeSidebar)="showSidebar=false"></app-sidenav-->
+<!--mat-sidenav-container>
+    <mat-sidenav #sidenav role="navigation">
+      <p>I'm the sidenav!</p>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <mat-toolbar color="primary">
+        <div>
+          <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+        <div><a routerLink="/">LOGO</a></div>
+        <div fxFlex fxLayout fxLayoutAlign="flex-end">
+          <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+            <li><a routerLink="/signup">Signup</a></li>
+            <li><a routerLink="/login">Login</a></li>
+            <li><a routerLink="/training">Training</a></li>
+          </ul>
+        </div>
+      </mat-toolbar>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container-->
+  
+  <mat-toolbar>
+    <button mat-icon-button (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <span>My App</span>
+
+    <mat-nav-list class="mat-list-menu">
+      @for (item of items; track items) {
+        <mat-list-item>
+          <div routerLink={{item.routerLink}}>
+            <i class={{item.icon}}></i>
+            {{item.label}}
+          </div>
+          
+        </mat-list-item>
+      }
+
+    </mat-nav-list>
+
+    <span class="spacer"></span>
+    <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+      <i class="fas fa-sign-in-alt"></i>
+    </button>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+      <i class="fas fa-user"></i>
+    </button>
+  </mat-toolbar>
+  <mat-drawer-container [hasBackdrop]="true">
+    <mat-drawer #drawer mode="side">
+
+        <mat-nav-list class="mat-list-drawer" (click)="drawer.toggle()">
+          @for (item of items; track items) {
+            <mat-list-item>
+              <div routerLink={{item.routerLink}}>
+                <i class={{item.icon}}></i>
+                {{item.label}}
+              </div>
+              
+            </mat-list-item>
+          }
+
+        </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content >
+      <router-outlet></router-outlet>
+    </mat-drawer-content>
+  </mat-drawer-container>
+
+  <!--mat-sidenav-container>
+    <mat-sidenav>Start</mat-sidenav>
+    <mat-sidenav-content>Main</mat-sidenav-content>
+  </mat-sidenav-container-->
+

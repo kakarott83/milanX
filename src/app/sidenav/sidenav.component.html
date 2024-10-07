@@ -1,0 +1,10 @@
+<div class="card flex justify-content-center">
+    <p-sidebar #sidebarRef [(visible)]="sidebarVisible" (onHide)="close()">
+        <ng-template pTemplate="header">
+            Logo
+        </ng-template>
+        <p-panelMenu *ngIf="isAuth" [model]="itemsList">
+            
+        </p-panelMenu>
+    </p-sidebar>
+</div>

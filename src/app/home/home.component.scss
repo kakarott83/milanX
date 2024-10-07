@@ -1,0 +1,27 @@
+.grid-container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-column-gap: 10px;
+    grid-auto-rows: min-content;
+  
+    &.no-gap {
+      grid-column-gap: 0px;
+    }
+  }
+  
+  @for $i from 1 through 12 {
+    .grid-col-start-#{$i} {
+      grid-column-start: $i;
+    }
+    .grid-col-span-#{$i} {
+      grid-column-end: span $i;
+    }
+  
+    .grid-row-start-#{$i} {
+      grid-row-start: $i;
+    }
+    .grid-row-span-#{$i} {
+      grid-row-end: span $i;
+    }
+  }

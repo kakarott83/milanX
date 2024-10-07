@@ -1,0 +1,17 @@
+.travel-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.time {
+    display: flex;
+}
+
+.hour {
+    margin-right: 10px;
+}
+
+.time-group {
+    display: flex;
+    flex-direction: row;
+}
