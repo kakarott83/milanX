@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 export class CustomerService {
 
   
-  data = {
+  private data = {
     customers: [
       {
         "name": "BANK-now",
@@ -27,4 +27,12 @@ export class CustomerService {
   getCustomers() {
     return of(this.data)
   }
+
+  getCustomerByName(name: string) {
+    const customer = this.data.customers.find(x => x.name == name)
+    return customer
+  }
+
+
+
 }

@@ -8,7 +8,7 @@ export class CountryService {
 
   constructor() { }
 
-  data = {
+  private data = {
     countries: [
       {'name': 'Schweiz',
         'rate': 64,
@@ -30,8 +30,6 @@ export class CountryService {
   }
 
   getCountryByName(name: string) {
-    return of (
-      this.data.countries.find(c => c.name == name)
-    )
+    return this.data.countries.find(c => c.name == name)
   }
 }

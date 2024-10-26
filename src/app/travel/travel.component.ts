@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { CommonModule, JsonPipe } from '@angular/common';
-import { FormArray, FormBuilder } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, LOCALE_ID } from '@angular/core';
+import { CommonModule, formatDate, JsonPipe } from '@angular/common';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { Observable, of, race } from 'rxjs';
@@ -13,6 +13,20 @@ import { CountryService } from '../services/country.service';
 import { Country } from '../model/country';
 import { HelperService } from '../services/helper.service';
 import { CalculateService } from '../services/calculate.service';
+import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
+const DE_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 
 @Component({
   selector: 'app-travel',
@@ -20,7 +34,13 @@ import { CalculateService } from '../services/calculate.service';
   imports: [MaterialModule, GUIModule,AsyncPipe, CommonModule],
   templateUrl: './travel.component.html',
   styleUrl: './travel.component.scss',
-  providers:[provideNativeDateAdapter(), CustomerService, JsonPipe],
+  providers:[
+    provideNativeDateAdapter(), 
+    CustomerService, 
+    JsonPipe,
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    { provide: MAT_DATE_FORMATS, useValue: DE_DATE_FORMATS },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TravelComponent implements OnInit {
@@ -37,16 +57,17 @@ export class TravelComponent implements OnInit {
   filteredMinuteEnd!: Observable<string[]>;
   filteredCustomers!: Observable<any[]>;
   filteredCountries!: Observable<any[]>;
+  daysArr: any[] = [];
   
 
   travelForm = this.fb.group({
     customer: [''],
     city: [''],
     country: [''],
-    startDate: [''],
+    startDate: [null as Date | null],
     startHours: [''],
     startMinutes: [''],
-    endDate: [''],
+    endDate: [null as Date | null],
     endHours: [''],
     endMinutes: [''],
     spends: this.fb.array([]),
@@ -69,6 +90,7 @@ export class TravelComponent implements OnInit {
     this.getCustomerList()
     this.getCountryList()
     this.changeDateTime()
+    
   }
 
   get spends(): FormArray {
@@ -98,34 +120,22 @@ export class TravelComponent implements OnInit {
       position: item.position,
       date: item.date,
       breakfast: item.breakfast,
-      launch: item.launch,
+      lunch: item.lunch,
       dinner: item.dinner,
-      value: 0
+      amount: item.amount,
+      defAmount: item.defaultAmount
     })
+    // daysForm.valueChanges.subscribe(x => {
+    //   console.log(x.position,'Pos')
+    //   if( this.helperService.isNumber (x.position) && x != undefined) {
+    //     this.calcDays(x.position)
+    //   }
+    // })
     this.days.push(daysForm)
   }
 
   removeDaysItems() {
     this.travelForm.controls.days.clear()
-  }
-
-  createDays() {
-    let s = this.travelForm.controls.startDate.value
-    let e = this.travelForm.controls.endDate.value
-
-    this.removeDaysItems()
-
-    if(s !==null && s !== '' && e !== null && e !== '') {
-      this.helperService.createDaysItems(new Date(s), new Date(e)).subscribe(data => {
-        data.forEach(d => {
-          this.addDaysItem(d);
-        })
-        //this.days.push(this.calcService.calculateDays(this.days))
-        
-      })
-    }
-
-
   }
 
   setFilter() {
@@ -186,19 +196,32 @@ export class TravelComponent implements OnInit {
   changeDateTime() {
     //Start
     this.travelForm.controls.startDate.valueChanges.subscribe(value => {
-      this.createDays()
+      //this.createDays()
     })
     //End
     this.travelForm.controls.endDate.valueChanges.subscribe(value => {
-      this.createDays()
+      //this.createDays()
     })
   }
 
   public selectedCustomer(customer: any) {
+    let today = new Date();
+
+    let startDateInit = new Date(today);
+    let endDateInit = new Date(today);
+    endDateInit.setDate(today.getDate()+3);
+
     if(customer) {
       this.travelForm.patchValue({
         city: customer.city,
-        country: customer.country
+        country: customer.country,
+        startDate: startDateInit,
+        endDate: endDateInit,
+        startHours: '5',
+        startMinutes: '15',
+        endHours: '5',
+        endMinutes: '15'
+
       })
       this.selectedCountry = this.countries.find(x => x.name == customer.country)
     }
@@ -237,6 +260,46 @@ export class TravelComponent implements OnInit {
         break
       }
     }
+  }
+
+  createInitDays() {
+
+    let s = this.travelForm.controls.startDate.value
+    let e = this.travelForm.controls.endDate.value
+    let c = this.travelForm.controls.customer.value
+
+    if(c && s && e) {
+      this.daysArr = this.helperService.createDaysInit(c, new Date(s), new Date(e))
+      this.daysArr.forEach(x => {
+        this.addDaysItem(x)
+      })
+    }
+  }
+
+  calcDays(index: any) {
+    const item = this.days.at(index) as FormGroup;
+    const breakfast = 0.2
+    const lunch = 0.4
+    const dinner = 0.4
+    let factor = 1
+    
+    if(item.get('breakfast')?.value) {
+      factor = factor - breakfast
+    }
+
+    if(item.get('lunch')?.value) {
+      factor = factor - lunch
+    }
+
+    if(item.get('dinner')?.value) {
+      factor = factor - dinner
+    }
+    
+    
+
+    item.patchValue({
+      amount: item.get('defAmount')?.value * factor
+    })
   }
     
 }

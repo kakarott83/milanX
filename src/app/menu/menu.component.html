@@ -51,7 +51,7 @@
     <span>My App</span>
 
     <mat-nav-list class="mat-list-menu">
-      @for (item of items; track items) {
+      @for (item of items; track item) {
         <mat-list-item>
           <div routerLink={{item.routerLink}}>
             <i class={{item.icon}}></i>
@@ -78,7 +78,7 @@
     <mat-drawer #drawer mode="side">
 
         <mat-nav-list class="mat-list-drawer" (click)="drawer.toggle()">
-          @for (item of items; track items) {
+          @for (item of items; track item) {
             <mat-list-item>
               <div routerLink={{item.routerLink}}>
                 <i class={{item.icon}}></i>
