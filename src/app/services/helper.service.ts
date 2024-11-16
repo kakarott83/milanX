@@ -38,29 +38,34 @@ export class HelperService {
 
 
 
-  createDaysInit(customerName: string, start: Date, end: Date) {
+  createDaysInit(countryName: string, start: Date, end: Date) {
 
     let daysArray = [];
     let customer;
-    let country;
-
-    customer = this.customerService.getCustomerByName(customerName);
-    if(customer) {
-      country = this.countryService.getCountryByName(customer?.country);
-    }
+    let country = this.countryService.getCountryByName(countryName);
 
     let s = moment(start);
     let e = moment(end);
-    let diff = e.diff(s, 'days')
+    let diffDays = e.diff(s, 'days');
+    let diffHours = e.diff(s, 'hours');
+
+    console.log(diffDays,'diffDays')
+    console.log(diffHours,'DiffHours')
 
     //First Day
-    daysArray.push(this.createDay(0,start, country?.partRate));
+    if(diffDays === 0 && diffHours < 8) {
+      daysArray.push(this.createDay(0,start, 0));
+    } else {
+      daysArray.push(this.createDay(0,start, country?.partRate));
+    }
 
     //other Days
-    for (let index = 1; index <= diff; index++) {
+    for (let index = 1; index <= diffDays; index++) {
       const element = s.add(1, 'days');
       daysArray.push(this.createDay(index, element.toDate(), country?.rate));
     }
+
+    console.log(daysArray,'daysArray');
 
     return daysArray
 
@@ -78,11 +83,36 @@ export class HelperService {
     }
 
 
-    return {position: pos, date: date, breakfast: defaultBreakfast, lunch: false, dinner: false, amount: totalAmount, defaultAmount: defAmount }
+    return {
+      position: pos,
+       date: date, 
+       breakfast: defaultBreakfast, 
+       lunch: false, 
+       dinner: false, 
+       amount: totalAmount, 
+       displayAmount: this.formatCurrency(totalAmount),
+       defaultAmount: defAmount 
+      }
   }
 
   isNumber(value: any) {
     return typeof value === 'number' ? true : false;
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('de-DE', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(value);
+  }
+
+  createHours(): string[] {
+    let hoursArr: string[] = [];
+
+    for (let index = 0; index < 24; index++) {
+      hoursArr.push(index.toString())
+    }
+    return hoursArr;
   }
 
 

@@ -18,7 +18,7 @@ export class CountryService {
         'rate': 36,
         'partRate': 24
       },
-      {'name': 'Schweiz',
+      {'name': 'Deutschland',
         'rate': 24,
         'partRate': 12
       }

@@ -4,6 +4,8 @@
       <form [formGroup]="travelForm" class="travel-form">
 
 
+
+
         <!-- Customer -->
         <mat-form-field class="example-full-width">
           <mat-label>Kunde</mat-label>
@@ -28,16 +30,11 @@
         <!-- Country -->
         <mat-form-field class="example-full-width">
           <mat-label>Land</mat-label>
-          <input type="text" placeholder="Pick one" aria-label="text" matInput formControlName="country"
-          [matAutocomplete]="country">
-        <mat-autocomplete autoActiveFirstOption #country="matAutocomplete">
-          @for (country of filteredCountries | async; track country) {
-          <mat-option [value]="country.name">{{country.name}}</mat-option>
-          }
-        </mat-autocomplete>
-        <button mat-icon-button matSuffix (click)="clear('customer')">
-          <mat-icon matSuffix>close</mat-icon>
-        </button>
+          <mat-select formControlName="country" (selectionChange)="changeDateTime()">
+            @for (country of countries; track country) {
+              <mat-option [value]="country.name">{{country.name}}</mat-option>
+              }
+          </mat-select>
         </mat-form-field>
 
         <!-- Range Picker -->
@@ -45,10 +42,10 @@
         <mat-form-field>
           <mat-label>Enter a date range</mat-label>
           <mat-date-range-input [formGroup]="travelForm" [rangePicker]="picker">
-            <input matStartDate formControlName="startDate" placeholder="Start date">
-            <input matEndDate formControlName="endDate" placeholder="End date">
+            <input matStartDate formControlName="startDate" placeholder="Start date" (dateChange)="changeDateTime()">
+            <input matEndDate formControlName="endDate" placeholder="End date" (dateChange)="changeDateTime()">
           </mat-date-range-input>
-          <mat-hint>DD/MM/YYYY – DD/MM/YYYY</mat-hint>
+          <mat-hint>DD.MM.YYYY – DD.MM.YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
         
@@ -64,7 +61,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>Start Uhrzeit</mat-label>
             <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="startHours"
-              [matAutocomplete]="hourStart">
+              [matAutocomplete]="hourStart" (selectionchange)="changeDateTime()">
             <mat-autocomplete autoActiveFirstOption #hourStart="matAutocomplete">
               @for (hour of filteredHoursStart | async; track hour) {
               <mat-option [value]="hour">{{hour}}</mat-option>
@@ -76,7 +73,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>Start Minuten</mat-label>
             <input type="text" placeholder="Pick one2" aria-label="Number" matInput formControlName="startMinutes"
-              [matAutocomplete]="minute">
+              [matAutocomplete]="minute" (selectionchange)="changeDateTime()">
             <mat-autocomplete autoActiveFirstOption #minute="matAutocomplete">
               @for (minute of filteredMinuteStart | async; track minute) {
               <mat-option [value]="minute">{{minute}}</mat-option>
@@ -90,7 +87,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>Ende Uhrzeit</mat-label>
             <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="endHours"
-              [matAutocomplete]="hourEnd">
+              [matAutocomplete]="hourEnd" (selectionchange)="changeDateTime()">
             <mat-autocomplete autoActiveFirstOption #hourEnd="matAutocomplete">
               @for (hour of filteredHoursEnd | async; track hour) {
               <mat-option [value]="hour">{{hour}}</mat-option>
@@ -102,7 +99,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>Ende Minuten</mat-label>
             <input type="text" placeholder="Pick one2" aria-label="Number" matInput formControlName="endMinutes"
-              [matAutocomplete]="minuteEnd">
+              [matAutocomplete]="minuteEnd" (selectionchange)="changeDateTime()">
             <mat-autocomplete autoActiveFirstOption #minuteEnd="matAutocomplete">
               @for (minute of filteredMinuteEnd | async; track minute) {
               <mat-option [value]="minute">{{minute}}</mat-option>
@@ -117,28 +114,33 @@
         <!-- Days -->
         <div formArrayName="days">
           @for (item of days.controls; track item; let i = $index) {
-            <div class="row" [formGroupName]="i">
-              <mat-form-field class="example-full-width">
-                <mat-label for="type">Position</mat-label>
-                <input matInput id="type" formControlName="position" placeholder="Type" />
+            <div class="flex flex-row flex-wrap" [formGroupName]="i">
+              <mat-form-field disabled="true">
+                <mat-label>Tag {{i+1}}</mat-label>
+                <input matInput formControlName="date" [matDatepicker]="dp1">
+                <mat-datepicker #dp1></mat-datepicker>
               </mat-form-field>
               <mat-form-field class="example-full-width">
-                <mat-label for="type">Date</mat-label>
-                <input matInput id="type" formControlName="date" placeholder="Type" />
+                <mat-label for="type">Betrag</mat-label>
+                <input type="text" matInput formControlName="displayAmount"/>
               </mat-form-field>
               <div (click)="calcDays(i)">
                 <mat-checkbox formControlName="breakfast">Frühstück</mat-checkbox>
                 <mat-checkbox formControlName="lunch">Mittag</mat-checkbox>
                 <mat-checkbox formControlName="dinner">Abendessen</mat-checkbox>
               </div>
+              <!-- ToDo: korrekte Formatierung -->
+               <!-- 
               <mat-form-field class="example-full-width">
                 <mat-label for="type">Betrag</mat-label>
-                <input matInput id="type" formControlName="amount" placeholder="Type" />
+                <input type="text" matInput formControlName="amount"/>
               </mat-form-field>
+
               <mat-form-field class="example-full-width">
                 <mat-label for="type">Default</mat-label>
                 <input matInput id="type" formControlName="defAmount" placeholder="Type" />
               </mat-form-field>
+              -->
             </div>
           }
         </div>
@@ -164,7 +166,8 @@
             </div>
           }
         </div>
-        <button (click)="createInitDays()">Test</button>
+        <button (click)="createInitDays()">Add</button>
+        <button (click)="removeDaysItems()">Remove</button>
         <div>{{daysArr | json}}</div>
       </form>
     </mat-card-content>
